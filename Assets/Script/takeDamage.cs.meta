@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: 5f7d532ce17e08a43bbfb20427571d20
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - audioSource: {instanceID: 0}
+  - damageSound: {fileID: 8300000, guid: 71d24cdbd5b22f249a37386f8b0f4d83, type: 3}
+  - criticalSound: {fileID: 8300000, guid: 084f54741c2271446b963eeaf35adb93, type: 3}
+  - offlineSound: {fileID: 8300000, guid: 2935354db47ce84479e77c3e6137d26f, type: 3}
+  - controller: {instanceID: 0}
+  - gunMultiplier: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
