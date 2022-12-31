@@ -8,7 +8,7 @@ public class NetworkCommandLine : NetworkBehaviour
 
     void Start()
     {
-        netManager = GetComponentInParent<NetworkManager>();
+        netManager = NetworkManager.Singleton;
 
         if (Application.isEditor) return;
 
