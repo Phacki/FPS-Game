@@ -3,9 +3,7 @@ using System.Collections;
 using TMPro;
 using Unity.Netcode;
 
-// NSS: Commenting this out.
-// Really, if you are assigning the audio source itself then you don't need to require it.
-//[RequireComponent(typeof(AudioSource))]
+[RequireComponent(typeof(AudioSource))]
 public class GunScript : NetworkBehaviour
 {
     public float damage = 10f;
@@ -19,7 +17,6 @@ public class GunScript : NetworkBehaviour
     public Animator animator;
     public int classSelected = 5;
     public bool FMJ;
-
 
     public PlayerMovement player;
     private const string PlayerTag = "Player";
@@ -43,7 +40,7 @@ public class GunScript : NetworkBehaviour
     public GameObject plusOverlay;
     public GameObject AROverlay;
     public GameObject SMGOverlay;
-    public GameObject ShotGunOverlay;
+    public GameObject SnotGunOverlay;
     public GameObject ARCharacter;
     public GameObject SMGCharacter;
     public GameObject SnotGunCharacter;
@@ -59,104 +56,59 @@ public class GunScript : NetworkBehaviour
     [SerializeField]
     private float shotVolume = 1f;
 
-    // NSS: Added Properties
-    private bool IsSelected;
-    public enum WeaponTypes
+    private void OnEnable()
     {
-        AR,
-        SMG,
-        Snotgun,
-        DotCH,
-        CrossCH,
-        PlusCH,
-    }
-
-    public WeaponTypes WeaponType;
-
-    public GameObject WeaponAsset;
-
-    //private void OnEnable()
-    //{
-    //    isReloading = false;
-    //    animator.SetBool("CurrentlyReloading", false);
-    //    animator.SetBool("Healing", false);
-    //    FireInterval = Time.time + 1f / fireRate;
-    //    audioSource.PlayOneShot(equipSound, 0.5f);
-    //    player.walkPace = walkPaceSet;
-    //    player.dropForce = dropForceSet;
-    //    player.thrustPower = thrustPowerSet;
-    //}
-
-
-
-    public void SelectedStatus(bool isSelected)
-    {
-        IsSelected = isSelected;
-
-        // Activate the weapon's visual and audio components
-        WeaponAsset.SetActive(IsSelected);
         isReloading = false;
         animator.SetBool("CurrentlyReloading", false);
         animator.SetBool("Healing", false);
-        if (IsSelected)
-        {
-            FireInterval = Time.time + 1f / fireRate;
-            audioSource.PlayOneShot(equipSound, 0.5f);
-            player.walkPace = walkPaceSet;
-            player.dropForce = dropForceSet;
-            player.thrustPower = thrustPowerSet;
-            WeaponSelected();
-        }
+        FireInterval = Time.time + 1f / fireRate;
+        audioSource.PlayOneShot(equipSound, 0.5f);
+        player.walkPace = walkPaceSet;
+        player.dropForce = dropForceSet;
+        player.thrustPower = thrustPowerSet;
     }
 
     void Update()
     {
-        // If not spawned or not selected exit early
-        if (!IsSpawned || !IsSelected)
-        {
-            return;
-        }
+            currentMag.text = magCounter + "";
+            ammoLeft.text = ammo + "";
 
-
-        currentMag.text = magCounter + "";
-        ammoLeft.text = ammo + "";
-
-        if (Time.time >= FireInterval)
-        {
-            animator.SetInteger("fire", -1);
-        }
-        if (isReloading == true)
-        {
-            return;
-        }
-        if (magCounter <= 0)
-        {
-            StartCoroutine(Reload());
-            return;
-        }
-        if (Automatic == true)
-        {
-            if (Input.GetButton("Fire1") && Time.time >= FireInterval)
+            if (Time.time >= FireInterval)
             {
-                animator.SetInteger("fire", 2);
-                FireInterval = Time.time + 1f / fireRate;
-                ShootClientRpc();
+                animator.SetInteger("fire", -1);
             }
-        }
-        if (Automatic == false)
-        {
-            if (Input.GetButtonDown("Fire1") && Time.time >= FireInterval)
+            if (isReloading == true)
             {
-                animator.SetInteger("fire", 2);
-                FireInterval = Time.time + 1f / fireRate;
-                ShootClientRpc();
+                return;
             }
-        }
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            StartCoroutine(Reload());
-            return;
-        }
+            if (magCounter <= 0)
+            {
+                StartCoroutine(Reload());
+                return;
+            }
+            if (Automatic == true)
+            {
+                if (Input.GetButton("Fire1") && Time.time >= FireInterval)
+                {
+                    animator.SetInteger("fire", 2);
+                    FireInterval = Time.time + 1f / fireRate;
+                    ShootClientRpc();
+                }
+            }
+            if (Automatic == false)
+            {
+                if (Input.GetButtonDown("Fire1") && Time.time >= FireInterval)
+                {
+                    animator.SetInteger("fire", 2);
+                    FireInterval = Time.time + 1f / fireRate;
+                    ShootClientRpc();
+                }
+            }
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                StartCoroutine(Reload());
+                return;
+            }
     }
     IEnumerator Reload()
     {
@@ -194,7 +146,7 @@ public class GunScript : NetworkBehaviour
     }
 
     [ClientRpc]
-    void ShootClientRpc()
+    void ShootClientRpc() 
     {
         audioSource.PlayOneShot(shootSound, shotVolume);
         muzzleFlash.Play();
@@ -204,7 +156,7 @@ public class GunScript : NetworkBehaviour
         {
             if (Physics.Raycast(mainCamera.transform.position, mainCamera.transform.forward, out hit, (Mathf.Infinity), ~fmjMask))
             {
-                if (hit.collider.tag == PlayerTag)
+                if(hit.collider.tag == PlayerTag)
                 {
                     PlayerHitServerRpc(hit.collider.name, damage);
                 }
@@ -220,12 +172,12 @@ public class GunScript : NetworkBehaviour
                 Destroy(hitobj, 2f);
 
 
-                //EquipAR(hit.transform.name);
-                //EquipSMG(hit.transform.name);
-                //EquipSnotgun(hit.transform.name);
-                //EquipDotCH(hit.transform.name);
-                //EquipCrossCH(hit.transform.name);
-                //EquipPlusCH(hit.transform.name);
+                EquipAR(hit.transform.name);
+                EquipSMG(hit.transform.name);
+                EquipSnotgun(hit.transform.name);
+                EquipDotCH(hit.transform.name);
+                EquipCrossCH(hit.transform.name);
+                EquipPlusCH(hit.transform.name);
             }
         }
         else if (FMJ == false)
@@ -243,12 +195,12 @@ public class GunScript : NetworkBehaviour
                 Destroy(hitobj, 2f);
 
 
-                //EquipAR(hit.transform.name);
-                //EquipSMG(hit.transform.name);
-                //EquipSnotgun(hit.transform.name);
-                //EquipDotCH(hit.transform.name);
-                //EquipCrossCH(hit.transform.name);
-                //EquipPlusCH(hit.transform.name);
+                EquipAR(hit.transform.name);
+                EquipSMG(hit.transform.name);
+                EquipSnotgun(hit.transform.name);
+                EquipDotCH(hit.transform.name);
+                EquipCrossCH(hit.transform.name);
+                EquipPlusCH(hit.transform.name);
             }
         }
 
@@ -264,75 +216,78 @@ public class GunScript : NetworkBehaviour
         takeDamage user = GameManager.GetUser(userID);
         user.TakeDamage(damage);
     }
-
-    void WeaponSelected()
+    public void EquipAR(string name)
     {
-        switch (WeaponType)
+        if (name == AR.name)
         {
-            case WeaponTypes.AR:
-                {
-                    Debug.Log("AR equipped");
-                    if (ShotGunOverlay) { ShotGunOverlay.SetActive(false); }
-                    if (SnotGunCharacter) { SnotGunCharacter.SetActive(false); }
+            classSelected = 0;
+            Debug.Log("AR equiped");
+            SnotGunOverlay.SetActive(false);
+            SnotGunCharacter.SetActive(false);
+            SMGOverlay.SetActive(false);
+            SMGCharacter.SetActive(false);
+            AROverlay.SetActive(true);
+            ARCharacter.SetActive(true);
+        }
+    }
 
-                    if (SMGOverlay) { SMGOverlay.SetActive(false); }
-                    if (SMGCharacter) { SMGCharacter.SetActive(false); }
+    public void EquipSMG(string name)
+    {
+        if (name == SMG.name)
+        {
+            classSelected = 1;
+            Debug.Log("SMG equiped");
+            SnotGunOverlay.SetActive(false);
+            SnotGunCharacter.SetActive(false);
+            SMGOverlay.SetActive(true);
+            SMGCharacter.SetActive(true);
+            AROverlay.SetActive(false);
+            ARCharacter.SetActive(false);
+        }
+    }
 
-                    if (AROverlay) { AROverlay.SetActive(true); }
-                    if (ARCharacter) { ARCharacter.SetActive(true); }
+    public void EquipSnotgun(string name)
+    {
+        if (name == Snotgun.name)
+        {
+            classSelected = 2;
+            Debug.Log("Snotgun equiped");
+            SnotGunOverlay.SetActive(true);
+            SnotGunCharacter.SetActive(true);
+            SMGOverlay.SetActive(false);
+            SMGCharacter.SetActive(false);
+            AROverlay.SetActive(false);
+            ARCharacter.SetActive(false);
+        }
+    }
 
-                    break;
-                }
-            case WeaponTypes.SMG:
-                {
-                    Debug.Log("SMG equipped");
-                    if (ShotGunOverlay) { ShotGunOverlay.SetActive(false); }
-                    if (SnotGunCharacter) { SnotGunCharacter.SetActive(false); }
+    public void EquipDotCH(string name)
+    {
+        if (name == DotCH.name)
+        {
+            dotOverlay.SetActive(true);
+            crossOverlay.SetActive(false);
+            plusOverlay.SetActive(false);
+        }
+    }
 
-                    if (SMGOverlay) { SMGOverlay.SetActive(true); }
-                    if (SMGCharacter) { SMGCharacter.SetActive(true); }
+    public void EquipCrossCH(string name)
+    {
+        if (name == CrossCH.name)
+        {
+            crossOverlay.SetActive(true);
+            dotOverlay.SetActive(false);
+            plusOverlay.SetActive(false);
+        }
+    }
 
-                    if (AROverlay) { AROverlay.SetActive(false); }
-                    if (ARCharacter) { ARCharacter.SetActive(false); }
-
-                    break;
-                }
-            case WeaponTypes.Snotgun:
-                {
-                    Debug.Log("Shotgun equipped");
-                    if (ShotGunOverlay) { ShotGunOverlay.SetActive(true); }
-                    if (SnotGunCharacter) { SnotGunCharacter.SetActive(true); }
-
-                    if (SMGOverlay) { SMGOverlay.SetActive(false); }
-                    if (SMGCharacter) { SMGCharacter.SetActive(false); }
-
-                    if (AROverlay) { AROverlay.SetActive(false); }
-                    if (ARCharacter) { ARCharacter.SetActive(false); }
-
-                    break;
-                }
-            case WeaponTypes.DotCH:
-                {
-                    if (dotOverlay) { dotOverlay.SetActive(true); };
-                    if (crossOverlay) { crossOverlay.SetActive(false); };
-                    if (plusOverlay) { plusOverlay.SetActive(false); };
-                    break;
-                }
-            case WeaponTypes.CrossCH:
-                {
-                    if (dotOverlay) { dotOverlay.SetActive(false); };
-                    if (crossOverlay) { crossOverlay.SetActive(true); };
-                    if (plusOverlay) { plusOverlay.SetActive(false); };
-                    break;
-                }
-            case WeaponTypes.PlusCH:
-                {
-                    if (dotOverlay) { dotOverlay.SetActive(false); };
-                    if (crossOverlay) { crossOverlay.SetActive(false); };
-                    if (plusOverlay) { plusOverlay.SetActive(true); };
-
-                    break;
-                }
+    public void EquipPlusCH(string name)
+    {
+        if (name == PlusCH.name)
+        {
+            plusOverlay.SetActive(true);
+            dotOverlay.SetActive(false);
+            crossOverlay.SetActive(false);
         }
     }
 }
