@@ -1,19 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Netcode;
 
 
-public class takeDamage : MonoBehaviour
+public class takeDamage : NetworkBehaviour
 {
     public AudioSource audioSource;
     public AudioClip damageSound;
     public AudioClip criticalSound;
     public AudioClip offlineSound;
+
+    public NetworkVariable<float> Health = new NetworkVariable<float>();
+    public float MaxHealth = 150f;
     public enum collisionType { head , body}
     public collisionType bulletcollision;
 
-    public PlayerMovement controller;
     public WeaponSwapV2 gunMultiplier;
+    public PlayerMovement controller;
     public void TakeDamage(float amount)
     {
         audioSource.PlayOneShot(damageSound, 0.2f);
@@ -26,12 +30,12 @@ public class takeDamage : MonoBehaviour
             gunMultiplier.multiplier = 1;
         }
 
-        controller.Health -= amount * gunMultiplier.multiplier;
-        if (controller.Health <= 50f)
+        Health.Value -= amount * gunMultiplier.multiplier;
+        if (Health.Value <= 50f)
         {
             audioSource.PlayOneShot(criticalSound);
         }
-            if (controller.Health <= 0f)
+            if (Health.Value <= 0f)
             {
             audioSource.PlayOneShot(offlineSound);
             controller.Die();

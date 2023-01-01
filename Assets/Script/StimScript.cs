@@ -7,6 +7,8 @@ using TMPro;
 public class StimScript : MonoBehaviour
 {
     public PlayerMovement player = new PlayerMovement();
+    public takeDamage heal = new takeDamage();
+
     public Animator animator;
     public int stimAmount = 1;
     public bool isHealing = false;
@@ -54,7 +56,7 @@ public class StimScript : MonoBehaviour
 
         if (Input.GetButtonDown("Fire2"))
         {
-            if(player.Health < 150) 
+            if(heal.Health.Value < 150) 
             {
                 if (isHealing == false)
                 {
@@ -88,25 +90,17 @@ public class StimScript : MonoBehaviour
     }
     void StimHeal()
     {
-        float health = player.Health;
+        float health = heal.Health.Value;
         switch (health)
         {
             case < 100:
-                player.Health += 50;
+                heal.Health.Value += 50;
                 break;
             case >= 100:
-                player.Health = 150;
+                heal.Health.Value = 150;
                 break;
         }
         Debug.Log("+50 hp added");
-        if(player.Health <= 100)
-        {
-          player.Health += 50;
-        }
-        else if(player.Health <= 100)
-        {
-
-        }
         
         stimAmount--;
     }

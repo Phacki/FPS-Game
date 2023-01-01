@@ -4,9 +4,9 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     private const string idPrefix = "Player";
-    private static Dictionary<string, PlayerManager> users = new Dictionary<string, PlayerManager>();
+    private static Dictionary<string, takeDamage> users = new Dictionary<string, takeDamage>();
 
-    public static void CreateUniqueUser(string networkID, PlayerManager user)
+    public static void CreateUniqueUser(string networkID, takeDamage user)
     {
         string userID = idPrefix + networkID;
         users.Add(userID, user);
@@ -16,5 +16,10 @@ public class GameManager : MonoBehaviour
     public static void DeleteUniqueUser(string userID)
     {
         users.Remove(userID);
+    }
+
+    public static takeDamage GetUser (string userID)
+    {
+        return users[userID];
     }
 }

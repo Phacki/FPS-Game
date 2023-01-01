@@ -22,11 +22,8 @@ public class PlayerMovement : NetworkBehaviour
     private float xAxis = 0;
 
     // Manages these attributes of the Player:
-    //                                         - health
     //                                         - movement speed
     //                                         - gravity and limits the height of the players thrust from the floor when jumping
-    public float Health = 150f;
-    public float MaxHealth = 150f;
     public float walkPace = 10f;
     public float dropForce = -10f;
     public float thrustPower = 3f;
@@ -50,6 +47,7 @@ public class PlayerMovement : NetworkBehaviour
     //                                           Creates a bool to save the status of the characters relationship to the floor regularly and locally to the script
     private bool onFloor;
     private CharacterController player;
+    public takeDamage health;
 
     //                                           Activated whenever Script is enabled:
     //                                         - Sets player as short cut to alter CharacterController put on the game object for player
@@ -58,6 +56,7 @@ public class PlayerMovement : NetworkBehaviour
     public AudioClip Jump;
     private void Awake()
     {
+        health.Health.Value = health.MaxHealth;
         player = GetComponent<CharacterController>();
         Cursor.lockState = CursorLockMode.Locked;
     }
@@ -128,7 +127,7 @@ public class PlayerMovement : NetworkBehaviour
     }
     public void HealthBar()
     {
-        CurrentHealth.text = Health + "";
-        HealthFill.fillAmount = Health / MaxHealth;
+        CurrentHealth.text = health.Health + "";
+        HealthFill.fillAmount = health.Health.Value / health.MaxHealth;
     }
 }

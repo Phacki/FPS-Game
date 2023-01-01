@@ -158,14 +158,14 @@ public class GunScript : NetworkBehaviour
             {
                 if(hit.collider.tag == PlayerTag)
                 {
-                    PlayerHitServerRpc(hit.collider.name);
+                    PlayerHitServerRpc(hit.collider.name, damage);
                 }
 
-                takeDamage target = hit.transform.GetComponent<takeDamage>();
-                if (target != null)
-                {
-                    target.TakeDamage(damage);
-                }
+                //takeDamage target = hit.transform.GetComponent<takeDamage>();
+                //if (target != null)
+                //{
+                //    target.TakeDamage(damage);
+                //}
 
                 //bullet contact on animation
                 GameObject hitobj = Instantiate(objHit, hit.point, Quaternion.LookRotation(hit.normal));
@@ -209,9 +209,12 @@ public class GunScript : NetworkBehaviour
 
     }
     [ServerRpc]
-    void PlayerHitServerRpc(string playerID)
+    void PlayerHitServerRpc(string userID, float damage)
     {
-        Debug.Log(playerID + "has been hit");
+        Debug.Log(userID + "has been hit");
+
+        takeDamage user = GameManager.GetUser(userID);
+        user.TakeDamage(damage);
     }
     public void EquipAR(string name)
     {

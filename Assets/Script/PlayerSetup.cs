@@ -1,6 +1,6 @@
 using UnityEngine;
 using Unity.Netcode;
-[RequireComponent(typeof(PlayerManager))]
+[RequireComponent(typeof(takeDamage))]
 public class PlayerSetup : NetworkBehaviour
 {
 
@@ -27,7 +27,7 @@ public class PlayerSetup : NetworkBehaviour
         base.OnNetworkSpawn();
 
         string networkID = GetComponent<NetworkObject>().NetworkObjectId.ToString();
-        PlayerManager user = GetComponent<PlayerManager>();
+        takeDamage user = GetComponent<takeDamage>();
         GameManager.CreateUniqueUser(networkID, user);
     }
 
